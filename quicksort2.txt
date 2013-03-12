@@ -30,7 +30,6 @@ method Partition(abc: seq<int>) returns (a: seq<int>, b: int, c: seq<int>)
   c := [];
   var i: int := 1;
   assert ([abc[0]]) == abc[..i];
-  assert multiset(a+[b]+c) == multiset(abc[..i]);
   while(i < |abc|)
     invariant 1 <= i <= |abc|;
     invariant forall j :: j in a ==> j <= b;
