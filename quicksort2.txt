@@ -1,0 +1,52 @@
+method QuickSort(s: seq<int>) returns(r: seq<int>)
+  decreases |s|;
+  ensures |s| == |r|;
+  ensures forall i :: i in s ==> i in r;
+  ensures forall i :: i in r ==> i in s;
+  ensures multiset(s) == multiset(r);
+  ensures forall i,j :: 0 <= i < j < |r| ==> r[i] <= r[j];
+{
+  if(|s| > 1) {
+    var a, b, c := Partition(s);
+    a := QuickSort(a);
+    c := QuickSort(c);
+    r := a + [b] + c;
+  }else{
+    r := s;
+  }
+}
+
+method Partition(abc: seq<int>) returns (a: seq<int>, b: int, c: seq<int>)
+  requires 1 < |abc|;
+  ensures |abc| == |a| + 1 + |c|;
+  ensures forall i :: i in abc ==> i in a+[b]+c;
+  ensures forall i :: i in a+[b]+c ==> i in abc;
+  ensures multiset(abc) == multiset(a+[b]+c);
+  ensures forall i :: 0 <= i < |a| ==> a[i] <= b;
+  ensures forall i :: 0 <= i < |c| ==> b < c[i];
+{
+  b := abc[0];
+  a := [];
+  c := [];
+  var i: int := 1;
+  assert ([abc[0]]) == abc[..i];
+  assert multiset(a+[b]+c) == multiset(abc[..i]);
+  while(i < |abc|)
+    invariant 1 <= i <= |abc|;
+    invariant forall j :: j in a ==> j <= b;
+    invariant forall j :: j in c ==> b < j;
+    invariant |a+[b]+c| == |abc[..i]|;
+    invariant forall j :: j in abc[..i] ==> j in a+[b]+c;
+    invariant forall j :: j in a+[b]+c ==> j in abc[..i];
+    invariant multiset(a+[b]+c) == multiset(abc[..i]);
+  {
+    if(abc[i] <= b){
+      a := a + [abc[i]];
+    }else{
+      c := c + [abc[i]];
+    }
+    assert abc[..i]+[abc[i]] == abc[..i+1];
+    i := i + 1;
+  }
+  assert abc[..i] == abc;
+}

@@ -1,0 +1,52 @@
+method QuickSort(a: array<int>, p: int, r: int)
+  requires a != null;
+  requires 0 <= p <= a.Length;
+  requires -1 <= r < a.Length;
+  modifies a;
+  decreases r - p;
+  ensures forall j, k :: p <= j < k <= r ==> a[j] <= a[k];
+{
+  if(p < r){
+    var q: int := Partition(a,p,r);
+    //var x_q: int := a[q];
+    QuickSort(a,p,q-1);
+    //assert x_q == a[q];
+    QuickSort(a,q+1,r);
+  }
+}
+  
+
+method Partition(a: array<int>, p: int, r: int) returns (q: int)
+  requires a != null;
+  requires 0 < a.Length;
+  requires 0 <= p < r < a.Length;
+  modifies a;
+  ensures p <= q <= r;
+  ensures forall k :: p <= k < q ==> a[k] <= a[q];
+  ensures forall k :: q < k <= r ==> a[q] < a[k];
+{
+  var x: int := a[r];
+  var i: int := p - 1;
+  var j: int := p;
+  var swap: int;
+  while(j < r)
+    invariant p <= j <= r;
+    invariant p-1 <= i < j;
+    invariant x == a[r];
+    invariant forall k :: p <= k <= i ==> a[k] <= x;
+    invariant forall k :: i+1<=k<=j-1 ==> a[k] > x; 
+  {
+    if(a[j] <= x){
+      i := i + 1;
+      swap := a[i];
+      a[i] := a[j];
+      a[j] := swap;
+    }
+    j := j + 1;
+  }
+  //assert x == a[r];
+  swap := a[i+1];
+  a[i+1] := a[r];
+  a[r] := swap;
+  q := i + 1;
+}
